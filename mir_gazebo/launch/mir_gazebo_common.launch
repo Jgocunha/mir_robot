@@ -10,8 +10,6 @@
   <arg name="prefix" value="$(arg tf_prefix)/" if="$(eval tf_prefix != '')" /> <!-- $(arg prefix) is used in all the config files! TODO: For multiple robots, create groups when loading the parameters to overwrite the arg? -->
   <arg name="prefix" value=""                  unless="$(eval tf_prefix != '')" />
 
-  <arg name="model_name" default="mir" doc="Name of the Gazebo robot model (needs to be different for each robot)" />
-
 
   <!-- Load URDF -->
   <include file="$(find mir_description)/launch/upload_mir_urdf.launch">
@@ -20,7 +18,7 @@
   </include>
 
   <!-- Spawn the robot into Gazebo -->
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model $(arg model_name)
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model mir
     -x $(arg robot_x) -y $(arg robot_y) -Y $(arg robot_yaw) " />
 
   <!-- Load ros_control controller configurations -->
@@ -35,12 +33,6 @@
   <include file="$(find mir_gazebo)/launch/includes/ekf.launch.xml">
       <arg name="tf_prefix" value="$(arg prefix)" />
   </include>
-
-  <!-- Add passive + mimic joints to joint_states topic -->
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <rosparam param="source_list">[mir/joint_states]</rosparam>
-    <param name="rate" value="200.0" />
-  </node>
 
   <!-- Robot state publisher -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />

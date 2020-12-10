@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- launch the robot and world in gazebo -->
+    <include file = "$(find mir_gazebo)/launch/mir_ikea_world.launch">
+    </include>
+
+    <!-- start simulation -->
+    <node pkg="rosservice" type="rosservice" name="unpause_physics" args="call --wait /gazebo/unpause_physics" />
+
+    <!-- localization -->
+    <include file = "$(find mir_navigation)/launch/amcl.launch">
+        <arg name = "initial_pose_x" value = "-8.2"/>
+        <arg name = "initial_pose_y" value = "-11.5"/>
+        <arg name = "initial_pose_a" value = "1.575"/>
+    </include>
+
+    <!-- navigation -->
+    <include file = "$(find mir_navigation)/launch/start_planner.launch">
+        <arg name = "map_file" value = "$(find mir_gazebo)/maps/IKEA_map/v4/IKEA.yaml"/>
+        <!-- <arg name = "virtual_walls_map_file" value = "$(find mir_gazebo)/maps/maze_virtual_walls.yaml"/> -->
+    </include>
+
+    <!-- Rviz-->
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find mir_navigation)/rviz/navigation.rviz" />
+
+</launch>
